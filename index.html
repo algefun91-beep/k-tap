@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K-TAP — Every Key, Your Way</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0A0A0A;
+    --white: #F5F5F0;
+    --accent: #00D4FF;
+    --gray: #888880;
+    --dark: #1C1C1E;
+    --border: rgba(255,255,255,0.08);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; cursor: none; }
+  .cursor { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; transform: translate(-50%, -50%); }
+  .cursor-ring { width: 32px; height: 32px; border: 1px solid rgba(0,212,255,0.4); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: all 0.08s ease; transform: translate(-50%, -50%); }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.85); backdrop-filter: blur(20px); }
+  .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: none; }
+  .nav-logo-icon { width: 32px; height: 32px; background: var(--white); border-radius: 7px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .nav-logo-icon span { font-weight: 900; font-size: 16px; color: var(--black); letter-spacing: -1px; }
+  .nav-logo-icon .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; top: 5px; right: 5px; }
+  .nav-wordmark { font-weight: 800; font-size: 16px; color: var(--white); letter-spacing: -0.5px; }
+  .nav-wordmark span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: var(--gray); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.05em; transition: color 0.2s; cursor: none; }
+  .nav-links a:hover { color: var(--white); }
+
+  /* hero */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 40px 80px; position: relative; overflow: hidden; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); border-radius: 100px; padding: 6px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 32px; animation: fadeUp 0.6s ease both; }
+  .hero-badge-dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .hero h1 { font-size: clamp(56px, 10vw, 120px); font-weight: 900; letter-spacing: -4px; line-height: 0.95; margin-bottom: 24px; animation: fadeUp 0.6s 0.1s ease both; }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub { font-size: 16px; color: var(--gray); max-width: 400px; line-height: 1.6; margin-bottom: 48px; font-weight: 400; animation: fadeUp 0.6s 0.2s ease both; }
+  .hero-cta { display: flex; gap: 12px; animation: fadeUp 0.6s 0.3s ease both; }
+  .btn-primary { background: var(--white); color: var(--black); border: none; padding: 14px 28px; border-radius: 8px; font-size: 14px; font-weight: 700; letter-spacing: -0.3px; cursor: none; transition: all 0.2s; text-decoration: none; }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--white); border: 1px solid var(--border); padding: 14px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: none; transition: all 0.2s; text-decoration: none; }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* audiences */
+  .audiences { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); font-weight: 600; margin-bottom: 48px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .audience-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; margin-bottom: 2px; }
+  .audience-card { background: var(--dark); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.3s; cursor: none; }
+  .audience-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+  .audience-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 20px; }
+  .audience-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .audience-desc { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
+  .audience-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .audience-features li { font-size: 12px; color: var(--gray); display: flex; align-items: center; gap: 8px; }
+  .audience-features li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+  .card-dev .audience-icon { background: rgba(0,212,255,0.1); }
+  .card-dev .audience-title { color: var(--accent); }
+  .card-dev .audience-features li::before { background: var(--accent); }
+  .card-creator .audience-icon { background: rgba(168,85,247,0.1); }
+  .card-creator .audience-title { color: #A855F7; }
+  .card-creator .audience-features li::before { background: #A855F7; }
+  .card-gamer .audience-icon { background: rgba(249,115,22,0.1); }
+  .card-gamer .audience-title { color: #F97316; }
+  .card-gamer .audience-features li::before { background: #F97316; }
+
+  /* specs strip */
+  .specs-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 20px 40px; display: flex; gap: 48px; overflow-x: auto; justify-content: center; }
+  .strip-item { display: flex; flex-direction: column; align-items: center; gap: 4px; white-space: nowrap; }
+  .strip-val { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--white); }
+  .strip-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); font-weight: 500; }
+
+  /* products */
+  .products { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2px; }
+  .product-card { background: var(--dark); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: none; transition: all 0.3s ease; }
+  .product-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-4px); }
+  .product-img-placeholder { width: 100%; aspect-ratio: 4/3; background: #1a1a1c; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
+  .product-card:hover .product-img-placeholder { background: #252528; }
+  .keypad-mock { display: flex; flex-direction: column; gap: 6px; padding: 16px; }
+  .keypad-oled { width: 80px; height: 20px; background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.3); border-radius: 3px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 1; }
+  .oled-text { font-size: 7px; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; white-space: nowrap; animation: scroll-text 4s linear infinite; }
+  @keyframes scroll-text { 0% { transform: translateX(60px); } 100% { transform: translateX(-120px); } }
+  .keypad-row { display: flex; gap: 6px; }
+  .key { width: 36px; height: 36px; background: #2a2a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: var(--gray); font-weight: 600; transition: all 0.15s; letter-spacing: 0.05em; }
+  .product-card:hover .key:nth-child(2) { background: rgba(0,212,255,0.2); border-color: var(--accent); color: var(--accent); }
+  .knob-mock { width: 28px; height: 28px; border-radius: 50%; background: #333; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .knob-dot { width: 3px; height: 3px; background: var(--accent); border-radius: 50%; position: relative; top: -6px; }
+  .coming-soon-mock { opacity: 0.3; filter: grayscale(1); }
+  .product-info { padding: 24px; }
+  .product-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15); border-radius: 100px; padding: 3px 10px; margin-bottom: 12px; }
+  .product-tag.soon { color: var(--gray); background: rgba(136,136,128,0.08); border-color: rgba(136,136,128,0.15); }
+  .product-name { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 8px; }
+  .product-desc { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+  .product-price .cents { font-size: 14px; font-weight: 600; color: var(--gray); }
+  .btn-buy { background: var(--white); color: var(--black); border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: none; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-buy:hover { background: var(--accent); transform: scale(1.02); }
+  .btn-disabled { background: rgba(255,255,255,0.06); color: var(--gray); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: not-allowed; }
+
+  /* detail page */
+  .detail-page { display: none; min-height: 100vh; padding: 120px 40px 80px; max-width: 1100px; margin: 0 auto; }
+  .detail-page.active { display: block; }
+  .home-page.hidden { display: none; }
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--gray); font-size: 13px; font-weight: 500; cursor: none; border: none; background: none; margin-bottom: 48px; transition: color 0.2s; padding: 0; }
+  .back-btn:hover { color: var(--white); }
+  .back-arrow { width: 20px; height: 20px; border: 1px solid var(--border); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .detail-img { background: var(--dark); border: 1px solid var(--border); border-radius: 20px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; position: sticky; top: 100px; }
+  .detail-keypad { transform: scale(2.2); }
+  .detail-info { padding-top: 8px; }
+  .detail-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15); border-radius: 100px; padding: 3px 10px; margin-bottom: 16px; }
+  .detail-name { font-size: clamp(36px, 5vw, 56px); font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 16px; }
+  .detail-name span { color: var(--accent); }
+  .detail-desc { font-size: 15px; color: var(--gray); line-height: 1.7; margin-bottom: 32px; }
+  .detail-specs { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 0; margin-bottom: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .spec-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); font-weight: 600; margin-bottom: 4px; }
+  .spec-value { font-size: 13px; font-weight: 600; color: var(--white); }
+  .detail-price { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; }
+  .detail-price sup { font-size: 24px; font-weight: 700; letter-spacing: -1px; vertical-align: super; color: var(--gray); }
+  .btn-buy-lg { display: block; width: 100%; background: var(--white); color: var(--black); border: none; padding: 16px; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: none; transition: all 0.2s; text-align: center; text-decoration: none; letter-spacing: -0.3px; }
+  .btn-buy-lg:hover { background: var(--accent); transform: translateY(-2px); }
+  .detail-note { font-size: 11px; color: var(--gray); text-align: center; margin-top: 12px; line-height: 1.5; }
+
+  /* preorder banner */
+  .preorder-banner { background: rgba(0,212,255,0.06); border-top: 1px solid rgba(0,212,255,0.15); border-bottom: 1px solid rgba(0,212,255,0.15); padding: 20px 40px; text-align: center; }
+  .preorder-banner p { font-size: 13px; color: var(--accent); font-weight: 500; letter-spacing: 0.05em; }
+  .preorder-banner span { color: var(--gray); }
+
+  footer { border-top: 1px solid var(--border); padding: 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-left { font-size: 12px; color: var(--gray); }
+  .footer-compliance { font-size: 10px; color: rgba(136,136,128,0.5); max-width: 400px; line-height: 1.5; text-align: right; }
+
+  @media (max-width: 768px) {
+    .detail-grid { grid-template-columns: 1fr; gap: 40px; }
+    nav { padding: 16px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .products, .audiences { padding: 60px 20px; }
+    .detail-page { padding: 100px 20px 60px; }
+    .specs-strip { padding: 20px; gap: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="showHome()">
+    <div class="nav-logo-icon"><span>K</span><div class="dot"></div></div>
+    <span class="nav-wordmark">K<span>-</span>TAP</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="event.preventDefault(); showHome(); setTimeout(()=>document.getElementById('products').scrollIntoView({behavior:'smooth'}),100)">Products</a></li>
+    <li><a href="#" onclick="event.preventDefault(); showHome(); setTimeout(()=>document.getElementById('audiences').scrollIntoView({behavior:'smooth'}),100)">Who it's for</a></li>
+    <li><a href="#" onclick="event.preventDefault(); showHome(); setTimeout(()=>document.getElementById('specs').scrollIntoView({behavior:'smooth'}),100)">Specs</a></li>
+  </ul>
+</nav>
+
+<div class="home-page" id="homePage">
+
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Now available — preorder today</div>
+    <h1>Every key,<br><span>your way.</span></h1>
+    <p class="hero-sub">A compact 9-key macro keypad built for developers, gamers, and content creators who don't settle for generic.</p>
+    <div class="hero-cta">
+      <a href="#" class="btn-primary" onclick="event.preventDefault(); document.getElementById('products').scrollIntoView({behavior:'smooth'})">Preorder now</a>
+      <a href="#" class="btn-secondary" onclick="event.preventDefault(); document.getElementById('audiences').scrollIntoView({behavior:'smooth'})">Who it's for</a>
+    </div>
+  </section>
+
+  <div class="preorder-banner">
+    <p>🔥 Preorder now — <span>ships when production is complete. Limited first batch.</span></p>
+  </div>
+
+  <!-- WHO IT'S FOR -->
+  <section class="audiences" id="audiences">
+    <div class="section-label">Who it's for</div>
+    <div class="audience-grid">
+      <div class="audience-card card-dev">
+        <div class="audience-icon">⌨</div>
+        <div class="audience-title">Developers</div>
+        <div class="audience-desc">Stop interrupting your flow. Map your most used shortcuts, git commands, and terminal macros to one tap.</div>
+        <ul class="audience-features">
+          <li>Git push, pull, commit in one key</li>
+          <li>Terminal & IDE shortcuts</li>
+          <li>OLED shows active profile</li>
+          <li>Fully programmable via KMK</li>
+        </ul>
+      </div>
+      <div class="audience-card card-creator">
+        <div class="audience-icon">🎬</div>
+        <div class="audience-title">Content Creators</div>
+        <div class="audience-desc">Speed up your editing workflow. Cut, trim, export and switch scenes without leaving your keyboard.</div>
+        <ul class="audience-features">
+          <li>DaVinci & Premiere shortcuts</li>
+          <li>OBS scene switching</li>
+          <li>Custom profiles per app</li>
+          <li>Rotary knob for volume/scroll</li>
+        </ul>
+      </div>
+      <div class="audience-card card-gamer">
+        <div class="audience-icon">🎮</div>
+        <div class="audience-title">Gamers</div>
+        <div class="audience-desc">Macro your most complex moves. Per-game profiles mean your keys always do exactly what you need.</div>
+        <ul class="audience-features">
+          <li>Per-game macro profiles</li>
+          <li>Anti-ghosting switch matrix</li>
+          <li>Hotswap switches</li>
+          <li>Compact desk footprint</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECS STRIP -->
+  <div class="specs-strip" id="specs">
+    <div class="strip-item"><span class="strip-val">9</span><span class="strip-label">Keys</span></div>
+    <div class="strip-item"><span class="strip-val">RP2040</span><span class="strip-label">Chip</span></div>
+    <div class="strip-item"><span class="strip-val">OLED</span><span class="strip-label">Display</span></div>
+    <div class="strip-item"><span class="strip-val">USB-C</span><span class="strip-label">Connection</span></div>
+    <div class="strip-item"><span class="strip-val">KMK</span><span class="strip-label">Firmware</span></div>
+    <div class="strip-item"><span class="strip-val">92×123mm</span><span class="strip-label">Size</span></div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section class="products" id="products">
+    <div class="section-label">Products</div>
+    <div class="product-grid">
+      <div class="product-card" onclick="showDetail('original')">
+        <div class="product-img-placeholder">
+          <div class="keypad-mock" id="cardKeypad">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+              <div class="keypad-oled" style="margin-bottom:0;flex:1;"><span class="oled-text" id="cardOled">profile: dev mode — git push</span></div>
+              <div class="knob-mock"><div class="knob-dot"></div></div>
+            </div>
+            <div class="keypad-row">
+              <div class="key" id="k1">GIT</div><div class="key" id="k2">RUN</div><div class="key" id="k3">BUILD</div>
+            </div>
+            <div class="keypad-row">
+              <div class="key" id="k4">TERM</div><div class="key" id="k5">PUSH</div><div class="key" id="k6">PULL</div>
+            </div>
+            <div class="keypad-row">
+              <div class="key" id="k7">SAVE</div><div class="key" id="k8">FMT</div><div class="key" id="k9">TEST</div>
+            </div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-tag">Preorder now</div>
+          <div class="product-name">K-TAP Original</div>
+          <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+            <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#00D4FF;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:100px;padding:3px 8px;">Devs</span>
+            <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#A855F7;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:100px;padding:3px 8px;">Creators</span>
+            <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#F97316;background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);border-radius:100px;padding:3px 8px;">Gamers</span>
+          </div>
+          <div class="product-desc">9-key hotswap macropad with OLED display and rotary encoder. One device, infinite uses.</div>
+          <div class="product-footer">
+            <div class="product-price">$99<span class="cents">.99</span></div>
+            <span class="btn-buy">Preorder →</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-left">© 2026 K-TAP. All rights reserved.</div>
+    <div class="footer-compliance">FCC Compliance: This device complies with Part 15 of the FCC Rules. K-TAP Original — Supplier's Declaration of Conformity.</div>
+  </footer>
+</div>
+
+<!-- DETAIL PAGE -->
+<div class="detail-page" id="detailPage">
+  <button class="back-btn" onclick="showHome()"><span class="back-arrow">←</span>Back to store</button>
+  <div class="detail-grid">
+    <div class="detail-img">
+      <div class="detail-keypad">
+        <div class="keypad-mock">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div class="keypad-oled" style="margin-bottom:0;flex:1;"><span class="oled-text">profile: dev mode — git push</span></div>
+            <div class="knob-mock"><div class="knob-dot"></div></div>
+          </div>
+          <div class="keypad-row"><div class="key">GIT</div><div class="key">RUN</div><div class="key">BUILD</div></div>
+          <div class="keypad-row"><div class="key">TERM</div><div class="key">PUSH</div><div class="key">PULL</div></div>
+          <div class="keypad-row"><div class="key">SAVE</div><div class="key">FMT</div><div class="key">TEST</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="detail-info">
+      <div class="detail-tag">Preorder now</div>
+      <div class="detail-name">K-TAP<br><span>Original</span></div>
+      <p class="detail-desc">A compact 9-key mechanical macro keypad built for developers, content creators, and gamers. RP2040 powered with hotswap MX switches, a 0.49" OLED display, and a rotary encoder. No RGB, no distractions — just your shortcuts, one tap away.</p>
+      <div class="detail-specs">
+        <div class="spec-item"><div class="spec-label">Keys</div><div class="spec-value">9x MX Hotswap</div></div>
+        <div class="spec-item"><div class="spec-label">Chip</div><div class="spec-value">RP2040</div></div>
+        <div class="spec-item"><div class="spec-label">Display</div><div class="spec-value">0.49" OLED</div></div>
+        <div class="spec-item"><div class="spec-label">Encoder</div><div class="spec-value">1x Rotary (EC11)</div></div>
+        <div class="spec-item"><div class="spec-label">Connection</div><div class="spec-value">USB-C</div></div>
+        <div class="spec-item"><div class="spec-label">Firmware</div><div class="spec-value">KMK / CircuitPython</div></div>
+        <div class="spec-item"><div class="spec-label">Dimensions</div><div class="spec-value">92 × 123 × 10mm</div></div>
+        <div class="spec-item"><div class="spec-label">RGB</div><div class="spec-value">None</div></div>
+      </div>
+      <div class="detail-price">$99<sup>.99</sup></div>
+      <a href="YOUR_STRIPE_LINK_HERE" class="btn-buy-lg" target="_blank">Preorder now — $99.99</a>
+      <p class="detail-note">Secure checkout via Stripe · Ships when production is complete · Limited first batch</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+  function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); }
+  animRing();
+  document.querySelectorAll('a, button, .product-card, .audience-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; ring.style.transform = 'translate(-50%,-50%) scale(1.5)'; ring.style.borderColor = 'rgba(0,212,255,0.8)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.borderColor = 'rgba(0,212,255,0.4)'; });
+  });
+  const profiles = [
+    { oled: 'profile: dev mode — git push', keys: ['GIT','RUN','BUILD','TERM','PUSH','PULL','SAVE','FMT','TEST'] },
+    { oled: 'profile: creator — obs & edit', keys: ['CUT','TRIM','EXPORT','OBS1','OBS2','OBS3','UNDO','REDO','SAVE'] },
+    { oled: 'profile: gamer — macro mode', keys: ['M1','M2','M3','M4','M5','M6','M7','M8','M9'] },
+  ];
+  let profileIdx = 0;
+  setInterval(() => {
+    profileIdx = (profileIdx + 1) % profiles.length;
+    const p = profiles[profileIdx];
+    const oled = document.getElementById('cardOled');
+    if (oled) oled.textContent = p.oled;
+    for (let i = 1; i <= 9; i++) {
+      const k = document.getElementById('k' + i);
+      if (k) k.textContent = p.keys[i-1];
+    }
+  }, 3000);
+
+  function showDetail(product) { document.getElementById('homePage').classList.add('hidden'); document.getElementById('detailPage').classList.add('active'); window.scrollTo(0, 0); }
+  function showHome() { document.getElementById('homePage').classList.remove('hidden'); document.getElementById('detailPage').classList.remove('active'); window.scrollTo(0, 0); }
+</script>
+</body>
+</html>
